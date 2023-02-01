@@ -1,0 +1,111 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MQTT Account Request</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <style>
+    #screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000a;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    #window {
+      background: #4994FB;
+      border: solid 2px white;
+      border-radius: 0.5em;
+      width: 90%;
+      padding: 1em;
+      box-sizing: border-box;
+      position: absolute;
+      left: 5%;
+      top: 10%;
+    }
+
+    #close {
+      color: black;
+      background: white;
+      font-size: 120%;
+      padding: 0.2em 0.4em;
+      border: solid 2px gray;
+      border-radius: 0.5em;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>MQTT Account Request</h1>
+
+  <p>
+    This page allows you to request for a free MQTT account at mqtt.a9i.sg
+  </p>
+
+  <p>
+    The accounts are meant for use with the IoTy platform and MQTT client, but it's just a normal MQTT broker (...running on <a href="https://mosquitto.org/">Mosquitto</a>) so any MQTT client should be able to use it.
+  </p>
+
+  <p>
+    This is a free service, so some rules applies...
+  </p>
+
+  <h2>Rules</h2>
+  <ul>
+    <li>No limits to the number of accounts you can create, but please don't create accounts that you don't intend to use.</li>
+    <li>While I don't plan to do so, data and accounts may be purged at any time (eg. if the server is out of space); don't rely on this service for anything important.</li>
+    <li>Don't publish more than 10 messages per second; this is a shared service, we need to limit the amount of bandwidth you use to be fair to everyone.</li>
+    <li>We will not help you recover any lost username/password/data; if it's lost, it's lost.</li>
+  </ul>
+
+  <p><strong>I've read and understood the rules.</strong> <button id="request">Request for an Account</button></p>
+
+  <h2>Topics</h2>
+  <p>All topics <strong>MUST</strong> start with the username followed by a slash ("/").</p>
+  <p>For example, if your username is "foo123", you can subscribe and publish to topic "foo123/abc", but cannot publish or subscribe to topic "abc".</p>
+
+  <h2>Settings</h2>
+  <ul>
+    <li>MQTT Broker: mqtt.a9i.sg (Port 1883)</li>
+    <li>Websocket (SSL): mqtt.a9i.sg (Port 8081)</li>
+    <li>Websocket (Non-SSL): mqtt.a9i.sg (Port 9001)</li>
+  </ul>
+
+  <div id="screen" class="hide">
+    <div id="window">
+      <h2>Copy this down!</h2>
+      <p>Once you close this window, you will not be able to recover the below info anymore.</p>
+      <p><strong>Username: <span id="username"></span></strong></p>
+      <p><strong>Password: <span id="password"></span></strong></p>
+      <button id="close">Close</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('close').addEventListener('click', function() {
+      document.getElementById('screen').classList.add('hide');
+    });
+
+    document.getElementById('request').addEventListener('click', function(){
+      console.log('get_account');
+      document.getElementById('screen').classList.remove('hide');
+      document.getElementById('username').innerText = 'Retrieving...';
+      document.getElementById('password').innerText = 'Retrieving...';
+      fetch('get_account.php')
+        .then((response) => response.json())
+        .then(function(data) {
+          document.getElementById('username').innerText = data;
+          document.getElementById('password').innerText = data;
+        });
+    });
+  </script>
+
+</body>
+</html>
